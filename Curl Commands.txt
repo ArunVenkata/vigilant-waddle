@@ -1,0 +1,19 @@
+
+Autocomplete - With limit and offset
+
+curl --location --request GET 'https://kl-test.herokuapp.com/api/branches/autocomplete?q=bangalore&limit=1&offset=3'
+
+
+Autocomplete - Without limit or offset
+
+curl --location --request GET 'https://kl-test.herokuapp.com/api/branches/autocomplete?q=bangalore'
+
+
+Branches search across all columns without Limits or offset
+
+curl --location --request GET 'https://kl-test.herokuapp.com/api/branches?q=bangalore'
+
+
+Branches search across all columns with Limits and offset
+
+curl --location --request GET 'https://kl-test.herokuapp.com/api/branches?q=bangalore&limit=20&offset=1'
