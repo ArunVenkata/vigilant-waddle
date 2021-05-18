@@ -6,9 +6,9 @@ from main.utils import get_int
 
 mainapp = Blueprint('mainapp', __name__, template_folder='templates')
 
-
 @mainapp.route("/api/branches/autocomplete", methods=["GET"])
 def hello():
+    session = get_session()
     query = request.args.get('q')
     limit = get_int(request.args.get('limit'), 100)
     offset = get_int(request.args.get('offset'), 0)
@@ -16,25 +16,27 @@ def hello():
     if not query:
         return jsonify({"success": False, "message": "No query specified"})
 
-    res = get_session().query(Branch).filter(Branch.branch.ilike(f"%{query}%")).order_by(Branch.ifsc)
+    res = session.query(Branch).filter(Branch.branch.ilike(f"%{query}%")).order_by(Branch.ifsc)
     # print(res)
     if limit and limit > 0:
         res = res.limit(limit)
     if offset and offset > 0:
         res = res.offset(offset)
-
-    return jsonify({ "branches": [row.serialize(ignore=['bank']) for row in res.all()]})
+    data = [row.serialize(ignore=['bank']) for row in res.all()]
+    session.close()
+    return jsonify({ "branches": data })
 
 @mainapp.route("/api/branches", methods=["GET"])
 def branches():
     query = request.args.get('q')
     limit = get_int(request.args.get('limit'), 100)
     offset = get_int(request.args.get('offset'), 0)
+    session = get_session()
 
     if not query:
         return jsonify({"success": False, "message": "No query specified"})
 
-    res = get_session().query(Branch).filter(
+    res = session.query(Branch).filter(
         or_(
             Branch.branch.ilike(f"%{query}%"),
             Branch.ifsc.ilike(f"%{query}%"),
@@ -48,5 +50,6 @@ def branches():
             res = res.limit(limit)
     if offset and offset > 0:
         res = res.offset(offset)
-    
-    return jsonify({ "branches": [row.serialize(ignore=['bank']) for row in res.all()]})
+    data = [row.serialize(ignore=['bank']) for row in res.all()]
+    session.close()
+    return jsonify({ "branches": data })
