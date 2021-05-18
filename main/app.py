@@ -44,7 +44,7 @@ def branches():
             Branch.city.ilike(f"%{query}%"),
             Branch.address.ilike(f"%{query}%"),
             Branch.state.ilike(f"%{query}%"),
-            ))
+            )).order_by(Branch.ifsc)
             
     if limit and limit > 0:
             res = res.limit(limit)
